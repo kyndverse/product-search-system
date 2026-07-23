@@ -16,6 +16,18 @@ services:
       timeout: 5s
       retries: 5
       start_period: 10s
+    command:
+      - postgres
+      - -c
+      - wal_level=logical
+      - -c
+      - max_replication_slots=10
+      - -c
+      - max_wal_senders=10
+      - -c
+      - max_logical_replication_workers=10
+      - -c
+      - max_worker_processes=10
   kafka:
     image: apache/kafka:4.3.1
     restart: unless-stopped
@@ -65,6 +77,25 @@ services:
     depends_on:
       kafka:
         condition: service_healthy
+  debezium:
+    image: debezium/connect:3.0.0.Final
+    restart: unless-stopped
+    depends_on:
+      kafka:
+        condition: service_healthy
+    ports:
+    - "8083:8083"
+    environment:
+      BOOTSTRAP_SERVERS: kafka:9092
+      GROUP_ID: 1
+
+      CONFIG_STORAGE_TOPIC: connect_configs
+      OFFSET_STORAGE_TOPIC: connect_offsets
+      STATUS_STORAGE_TOPIC: connect_statuses
+
+      CONFIG_STORAGE_REPLICATION_FACTOR: 1
+      OFFSET_STORAGE_REPLICATION_FACTOR: 1
+      STATUS_STORAGE_REPLICATION_FACTOR: 1
 volumes:
   postgres_data:
   kafka_data:
