@@ -78,10 +78,12 @@ services:
       kafka:
         condition: service_healthy
   debezium:
-    image: debezium/connect:3.0.0.Final
+    image: quay.io/debezium/connect:3.3.0.Final
     restart: unless-stopped
     depends_on:
       kafka:
+        condition: service_healthy
+      postgres:
         condition: service_healthy
     ports:
     - "8083:8083"
@@ -96,6 +98,12 @@ services:
       CONFIG_STORAGE_REPLICATION_FACTOR: 1
       OFFSET_STORAGE_REPLICATION_FACTOR: 1
       STATUS_STORAGE_REPLICATION_FACTOR: 1
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8083/ >/dev/null"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
 volumes:
   postgres_data:
   kafka_data:

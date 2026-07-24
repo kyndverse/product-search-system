@@ -1,0 +1,29 @@
+{
+  "name": "marketplace-postgres-source",
+  "config": {
+    "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+
+    "plugin.name": "pgoutput",
+
+    "database.hostname": "postgres",
+    "database.port": "5432",
+    "database.user": "debezium",
+    "database.password": "debezium",
+    "database.dbname": "marketplace_db",
+
+    "topic.prefix": "product",
+
+    "slot.name": "product_slot",
+    "publication.name": "product_publication",
+
+    "table.include.list": "public.products,public.categories",
+
+    "snapshot.mode": "initial",
+
+    "key.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+
+    "key.converter.schemas.enable": "false",
+    "value.converter.schemas.enable": "false"
+  }
+}
