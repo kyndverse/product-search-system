@@ -1,3 +1,5 @@
+import { CategoryDocument } from 'src/modules/category/model/category-document.model';
+
 export interface ProductDocument {
   id: string;
   name: string;
@@ -5,4 +7,6 @@ export interface ProductDocument {
   slug: string;
   price: number;
   stock: number;
+
+  category: CategoryDocument;
 }

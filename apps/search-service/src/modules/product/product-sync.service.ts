@@ -4,6 +4,7 @@ import { DebeziumEventDto } from '../kafka/model/debezium-event.model';
 import { Product } from './model/product-event.model';
 import { SearchIndex } from '../elasticsearch/model/search-index.model';
 import { ProductDocument } from './model/product-document.model';
+import { CategoryDocument } from '../category/model/category-document.model';
 
 @Injectable()
 export class ProductSycnService {
@@ -31,7 +32,11 @@ export class ProductSycnService {
   }
 
   private async create(product: Product) {
-    const document = this.toDocument(product);
+    const document = await this.toDocument(product);
+
+    if (!document) {
+      return;
+    }
 
     await this.elasticsearchService.index(
       SearchIndex.PRODUCTS,
@@ -41,7 +46,11 @@ export class ProductSycnService {
   }
 
   private async update(before: Product, after: Product) {
-    const document = this.toDocument(after);
+    const document = await this.toDocument(after);
+
+    if (!document) {
+      return;
+    }
 
     await this.elasticsearchService.index(
       SearchIndex.PRODUCTS,
@@ -55,7 +64,11 @@ export class ProductSycnService {
   }
 
   private async snapshot(product: Product) {
-    const document = this.toDocument(product);
+    const document = await this.toDocument(product);
+
+    if (!document) {
+      return;
+    }
 
     await this.elasticsearchService.index(
       SearchIndex.PRODUCTS,
@@ -64,7 +77,21 @@ export class ProductSycnService {
     );
   }
 
-  private toDocument(product: Product): ProductDocument {
+  private async toDocument(product: Product): Promise<ProductDocument | null> {
+    // Can be optimize soon
+    const category = await this.elasticsearchService.get<CategoryDocument>(
+      SearchIndex.CATEGORIES,
+      product.category_id.toString(),
+    );
+
+    if (!category) {
+      this.logger.warn(
+        `Category ${product.category_id} not found. Skip indexing product ${product.id}.`,
+      );
+
+      return null;
+    }
+
     return {
       id: product.id,
       name: product.name,
@@ -72,6 +99,7 @@ export class ProductSycnService {
       description: product.description,
       price: Number(product.price),
       stock: product.stock,
+      category,
     };
   }
 }

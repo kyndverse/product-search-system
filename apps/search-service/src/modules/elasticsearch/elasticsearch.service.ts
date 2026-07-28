@@ -1,5 +1,5 @@
 import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
-import { Client } from '@elastic/elasticsearch';
+import { Client, errors } from '@elastic/elasticsearch';
 
 @Injectable()
 export class ElasticsearchService implements OnModuleInit {
@@ -25,5 +25,22 @@ export class ElasticsearchService implements OnModuleInit {
 
   async delete(index: string, id: string) {
     return this.client.delete({ index, id });
+  }
+
+  async get<T>(index: string, id: string): Promise<T | null> {
+    try {
+      const response = await this.client.get<T>({
+        index,
+        id,
+      });
+
+      return response._source ?? null;
+    } catch (error) {
+      if (error instanceof errors.ResponseError) {
+        if (error.statusCode === 404) return null;
+      }
+
+      return null;
+    }
   }
 }
