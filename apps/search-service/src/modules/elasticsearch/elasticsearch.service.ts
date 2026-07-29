@@ -1,5 +1,7 @@
 import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { Client, errors } from '@elastic/elasticsearch';
+import { estypes } from '@elastic/elasticsearch';
+import { SearchIndex } from './model/search-index.model';
 
 @Injectable()
 export class ElasticsearchService implements OnModuleInit {
@@ -13,6 +15,114 @@ export class ElasticsearchService implements OnModuleInit {
     const info = await this.client.info();
 
     this.logger.log(`Connected to Elasticsearch ${info.version.number}`);
+
+    await this.ensureCategoryIndex();
+    await this.ensureProductIndex();
+  }
+
+  private async ensureCategoryIndex() {
+    const index = SearchIndex.CATEGORIES;
+
+    const exists = await this.client.indices.exists({
+      index,
+    });
+
+    if (exists) {
+      this.logger.log(`Index '${index}' already exists.`);
+      return;
+    }
+
+    await this.client.indices.create({
+      index,
+      mappings: {
+        properties: {
+          id: {
+            type: 'keyword',
+          },
+          name: {
+            type: 'text',
+            fields: {
+              keyword: {
+                type: 'keyword',
+              },
+            },
+          },
+          slug: {
+            type: 'keyword',
+          },
+        },
+      },
+    });
+
+    this.logger.log(`Index '${index}' created.`);
+  }
+
+  private async ensureProductIndex() {
+    const index = SearchIndex.PRODUCTS;
+
+    const exists = await this.client.indices.exists({
+      index,
+    });
+
+    if (exists) {
+      this.logger.log(`Index '${index}' already exists.`);
+      return;
+    }
+
+    await this.client.indices.create({
+      index,
+      mappings: {
+        properties: {
+          id: {
+            type: 'keyword',
+          },
+          name: {
+            type: 'text',
+            fields: {
+              keyword: {
+                type: 'keyword',
+              },
+            },
+          },
+          description: {
+            type: 'text',
+          },
+          slug: {
+            type: 'keyword',
+          },
+          price: {
+            type: 'double',
+          },
+          stock: {
+            type: 'integer',
+          },
+          createdAt: {
+            type: 'date',
+            format: 'epoch_millis',
+          },
+          category: {
+            properties: {
+              id: {
+                type: 'keyword',
+              },
+              name: {
+                type: 'text',
+                fields: {
+                  keyword: {
+                    type: 'keyword',
+                  },
+                },
+              },
+              slug: {
+                type: 'keyword',
+              },
+            },
+          },
+        },
+      },
+    });
+
+    this.logger.log(`Index '${index}' created.`);
   }
 
   async index<T extends object>(index: string, id: string, document: T) {
@@ -24,7 +134,18 @@ export class ElasticsearchService implements OnModuleInit {
   }
 
   async delete(index: string, id: string) {
-    return this.client.delete({ index, id });
+    try {
+      await this.client.delete({
+        index,
+        id,
+      });
+    } catch (error) {
+      if (error instanceof errors.ResponseError && error.statusCode === 404) {
+        return;
+      }
+
+      throw error;
+    }
   }
 
   async get<T>(index: string, id: string): Promise<T | null> {
@@ -36,11 +157,18 @@ export class ElasticsearchService implements OnModuleInit {
 
       return response._source ?? null;
     } catch (error) {
-      if (error instanceof errors.ResponseError) {
-        if (error.statusCode === 404) return null;
+      if (error instanceof errors.ResponseError && error.statusCode === 404) {
+        return null;
       }
 
       return null;
     }
+  }
+
+  async search<T>(index: string, request: estypes.SearchRequest) {
+    return this.client.search<T>({
+      index,
+      ...request,
+    });
   }
 }
