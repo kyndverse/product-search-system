@@ -32,6 +32,9 @@ export class ProductSearchQueryBuilder {
         multi_match: {
           query: dto.q,
           fields: ['name^3', 'description', 'category.name'],
+          fuzziness: 'AUTO',
+          prefix_length: 2,
+          operator: 'and',
         },
       });
     }
