@@ -21,10 +21,12 @@ export class ProductSearchService {
     const from = (page - 1) * limit;
 
     const query = this.queryBuilder.build(dto);
+    const sort = this.queryBuilder.buildSort(dto);
 
     const response = await this.elasticsearchService.search<ProductDocument>(
       SearchIndex.PRODUCTS,
       {
+        sort,
         query,
         from,
         size: limit,

@@ -4,20 +4,6 @@ import { SearchProductDto } from '../dto/search-product.dto';
 
 @Injectable()
 export class ProductSearchQueryBuilder {
-  // build(dto: SearchProductDto): estypes.QueryDslQueryContainer {
-  //   if (!dto.q) {
-  //     return {
-  //       match_all: {},
-  //     };
-  //   }
-  //   return {
-  //     multi_match: {
-  //       query: dto.q,
-  //       fields: ['name^3', 'description', 'category.name'],
-  //     },
-  //   };
-  // }
-
   build(dto: SearchProductDto): estypes.QueryDslQueryContainer {
     const must = this.buildMustQueries(dto);
     const filter = this.buildFilterQueries(dto);
@@ -63,6 +49,20 @@ export class ProductSearchQueryBuilder {
     this.pushIfExists(filters, this.buildStockFilter(dto));
 
     return filters;
+  }
+
+  buildSort(dto: SearchProductDto): estypes.SortCombinations[] | undefined {
+    switch (dto.sort) {
+      case 'price':
+        return this.buildPriceSort(dto);
+
+      case 'newest':
+        return this.buildNewestSort();
+
+      case 'relevance':
+      default:
+        return undefined;
+    }
   }
 
   private buildCategoryFilter(
@@ -115,6 +115,26 @@ export class ProductSearchQueryBuilder {
         },
       },
     };
+  }
+
+  private buildPriceSort(dto: SearchProductDto): estypes.SortCombinations[] {
+    return [
+      {
+        price: {
+          order: dto.order ?? 'asc',
+        },
+      },
+    ];
+  }
+
+  private buildNewestSort(): estypes.SortCombinations[] {
+    return [
+      {
+        createdAt: {
+          order: 'desc',
+        },
+      },
+    ];
   }
 
   // Helper
