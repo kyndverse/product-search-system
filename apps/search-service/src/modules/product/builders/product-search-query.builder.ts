@@ -68,6 +68,20 @@ export class ProductSearchQueryBuilder {
     }
   }
 
+  buildHighlight(dto: SearchProductDto): estypes.SearchHighlight | undefined {
+    if (!dto.q) {
+      return undefined;
+    }
+
+    return {
+      pre_tags: ['<em>'],
+      post_tags: ['</em>'],
+      fields: {
+        name: {},
+      },
+    };
+  }
+
   private buildCategoryFilter(
     dto: SearchProductDto,
   ): estypes.QueryDslQueryContainer | null {

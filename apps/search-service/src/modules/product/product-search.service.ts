@@ -6,6 +6,7 @@ import { SearchIndex } from '../elasticsearch/model/search-index.model';
 import { PaginatedResponse } from 'src/common/models/response';
 import { estypes } from '@elastic/elasticsearch';
 import { ProductDocument } from './model/product-document.model';
+import { SearchProductResponse } from './model/search-product-response';
 
 @Injectable()
 export class ProductSearchService {
@@ -22,12 +23,14 @@ export class ProductSearchService {
 
     const query = this.queryBuilder.build(dto);
     const sort = this.queryBuilder.buildSort(dto);
+    const highlight = this.queryBuilder.buildHighlight(dto);
 
     const response = await this.elasticsearchService.search<ProductDocument>(
       SearchIndex.PRODUCTS,
       {
         sort,
         query,
+        highlight,
         from,
         size: limit,
       },
@@ -46,21 +49,26 @@ export class ProductSearchService {
         ? response.hits.total
         : (response.hits.total?.value ?? 0);
 
-    const data = response.hits.hits.map((hit) => {
-      if (!hit._source) {
-        throw new InternalServerErrorException(
-          'Invalid Elasticsearch response.',
-        );
-      }
+    const data = response.hits.hits.map((hit) => this.mapProduct(hit));
 
-      return hit._source;
-    });
-
-    return new PaginatedResponse<ProductDocument>(data, {
+    return new PaginatedResponse<SearchProductResponse>(data, {
       page,
       limit,
       total,
       totalPages: Math.ceil(total / limit),
     });
+  }
+
+  private mapProduct(
+    hit: estypes.SearchHit<ProductDocument>,
+  ): SearchProductResponse {
+    if (!hit._source) {
+      throw new InternalServerErrorException('Invalid Elasticsearch response.');
+    }
+
+    return {
+      ...hit._source,
+      highlight: hit.highlight,
+    };
   }
 }
