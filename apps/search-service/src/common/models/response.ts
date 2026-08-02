@@ -1,3 +1,5 @@
+import { SearchProductFacet } from 'src/modules/product/model/search-product-facet';
+
 export class PaginatedResponse<T> {
   constructor(
     public data: T[],
@@ -7,5 +9,6 @@ export class PaginatedResponse<T> {
       total: number;
       totalPages: number;
     },
+    public facet: SearchProductFacet,
   ) {}
 }

@@ -19,6 +19,7 @@ export class ResponseInterceptor implements NestInterceptor {
           return {
             data: response.data,
             meta: response.meta,
+            facet: response.facet,
           };
         }
 
