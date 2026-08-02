@@ -165,8 +165,8 @@ export class ElasticsearchService implements OnModuleInit {
     }
   }
 
-  async search<T>(index: string, request: estypes.SearchRequest) {
-    return this.client.search<T>({
+  async search<TDocument>(index: string, request: estypes.SearchRequest) {
+    return this.client.search<TDocument>({
       index,
       ...request,
     });

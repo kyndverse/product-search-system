@@ -4,6 +4,7 @@ import { ElasticsearchModule } from '../elasticsearch/elasticsearch.module';
 import { ProductSearchService } from './product-search.service';
 import { ProductController } from './product.controller';
 import { ProductSearchQueryBuilder } from './builders/product-search-query.builder';
+import { ProductAggregationBuilder } from './builders/product-aggregation.builder';
 
 @Module({
   controllers: [ProductController],
@@ -11,6 +12,7 @@ import { ProductSearchQueryBuilder } from './builders/product-search-query.build
     ProductSycnService,
     ProductSearchService,
     ProductSearchQueryBuilder,
+    ProductAggregationBuilder,
   ],
   exports: [ProductSycnService],
   imports: [ElasticsearchModule],
