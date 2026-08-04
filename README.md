@@ -8,16 +8,16 @@ The project demonstrates how Change Data Capture (CDC) can synchronize relationa
 
 ## Architecture
 
-![Architecture](docs/images/architecture.png)
+![Architecture](docs/images/architecture.svg)
 
 ---
 
 ## Data Flow
 
-1. User interacts with the Next.js application.
-2. Product Service persists data into PostgreSQL.
-3. PostgreSQL records changes in WAL.
-4. Debezium captures the changes through CDC.
+1. A client creates, updates, or deletes a product through the Product Service.
+2. Product Service persists the changes to PostgreSQL.
+3. PostgreSQL records the changes in its Write-Ahead Log (WAL).
+4. Debezium captures the database changes using Change Data Capture (CDC).
 5. Debezium publishes events to Kafka.
 6. Search Service consumes Kafka events.
 7. Elasticsearch indexes the product document.
@@ -26,27 +26,26 @@ The project demonstrates how Change Data Capture (CDC) can synchronize relationa
 
 ## Tech Stack
 
-### Frontend
-
-- Next.js
-- TypeScript
-- Tailwind CSS
-
-### Backend
+### Framework
 
 - NestJS
+
+### Database
+
 - PostgreSQL
 - Prisma ORM
 
-### Messaging
+### Change Data Capture (CDC)
 
-- Apache Kafka
 - Debezium
 
-### Search
+### Event Streaming
+
+- Apache Kafka
+
+### Search Engine
 
 - Elasticsearch
-- Kibana
 
 ### Infrastructure
 
@@ -58,48 +57,46 @@ The project demonstrates how Change Data Capture (CDC) can synchronize relationa
 
 ### Product Service
 
-- [ ] Create Product
-- [ ] Update Product
-- [ ] Delete Product
-- [ ] Product Categories
-- [ ] Pagination
-- [ ] Validation
-- [ ] Swagger API
+- [x] Product CRUD
+- [x] Category CRUD
+- [x] Pagination
+- [x] Request Validation
 
 ### Search Service
 
-- [ ] Full-text Search
-- [ ] Fuzzy Search
-- [ ] Category Filter
-- [ ] Price Filter
-- [ ] Sorting
-- [ ] Pagination
-- [ ] Highlight Search Result
+- [x] CDC Synchronization with Debezium
+- [x] Kafka Event Consumer
+- [x] Product Indexing
+- [x] Category Indexing
+- [x] Full-text Search
+- [x] Fuzzy Search
+- [x] Category Filter
+- [x] Price Range Filter
+- [x] In-stock Filter
+- [x] Sorting
+- [x] Pagination
+- [x] Highlight Search Results
+- [x] Category Facets
+- [x] Price Range Facets
 
-### Infrastructure
+## Coming Soon
 
-- [ ] PostgreSQL
-- [ ] Kafka
-- [ ] Debezium
-- [ ] Elasticsearch
-- [ ] Kibana
+### Frontend
 
----
+- [ ] Implement API on Next.js Web Application
 
 ## Project Structure
 
 ```
 .
 ├── apps
-│   ├── web
 │   ├── product-service
 │   └── search-service
 │
 ├── infrastructure
-│   ├── docker-compose.yml
-│   ├── kafka
+│   ├── docker-compose.yaml
 │   ├── debezium
-│   └── elasticsearch
+│   └── postgres
 │
 ├── docs
 │   ├── architecture.md
@@ -107,21 +104,6 @@ The project demonstrates how Change Data Capture (CDC) can synchronize relationa
 │
 └── README.md
 ```
-
----
-
-## Learning Objectives
-
-This project aims to learn:
-
-- Change Data Capture (CDC)
-- Event-Driven Architecture
-- Apache Kafka
-- Debezium
-- Elasticsearch
-- Full-text Search
-- Docker Compose
-- Distributed Systems fundamentals
 
 ---
 
