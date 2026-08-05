@@ -79,11 +79,15 @@ The project demonstrates how Change Data Capture (CDC) can synchronize relationa
 - [x] Category Facets
 - [x] Price Range Facets
 
+---
+
 ## Coming Soon
 
 ### Frontend
 
 - [ ] Implement API on Next.js Web Application
+
+---
 
 ## Project Structure
 
@@ -99,6 +103,7 @@ The project demonstrates how Change Data Capture (CDC) can synchronize relationa
 │   └── postgres
 │
 ├── docs
+│   ├── api.md
 │   ├── architecture.md
 │   └── images
 │
@@ -107,12 +112,11 @@ The project demonstrates how Change Data Capture (CDC) can synchronize relationa
 
 ---
 
-## Future Improvements
+## Documentation
 
-- Authentication
-- Dead Letter Queue (DLQ)
-- Retry Mechanism
-- Monitoring
-- Structured Logging
-- CI/CD Pipeline
-- Kubernetes Deployment
+Detailed project documentation is available in the `docs` directory.
+
+| Document | Description |
+|----------|-------------|
+| [Architecture](docs/architecture.md) | System architecture, design principles, event processing, and CDC implementation. |
+| [API Reference](docs/api.md) | REST API documentation for Product Service and Search Service. |

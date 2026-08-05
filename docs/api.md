@@ -1,29 +1,55 @@
 # API Documentation
 
+---
+
+## List
+
+- [Product Service](#product-service)
+  - [Products](#create-product)
+  - [Categories](#create-category)
+- [Search Service](#search-service)
+  - [Search](#search-product)
+
+---
+
 ## Product Service
 
 ### Create Product
 
-POST /products
+```
+POST /api/products
+```
 
-Request
+**Request Body**
 
 ```json
 {
   "name": "iPhone 17",
   "description": "Latest Apple smartphone",
+  "slug": "iphone-17",
   "price": 1200,
   "stock": 20,
-  "categoryId": 1
+  "categoryId": "cuid...."
 }
 ```
 
-Response
+**Response**
+
+`201 Created`
 
 ```json
 {
-  "id": 1,
-  "name": "iPhone 17"
+  "data": {
+    "id": "cuid....",
+    "name": "iPhone 17",
+    "description": "Latest Apple smartphone",
+    "slug": "iphone-17",
+    "price": 1200,
+    "stock": 20,
+    "categoryId": "cuid....",
+    "createdAt": "Date",
+    "updatedAt": "Date"
+  }
 }
 ```
 
@@ -31,41 +57,275 @@ Response
 
 ### Update Product
 
-PUT /products/:id
+```
+PATCH /api/products/:id
+```
+
+**Request Body**
+
+```json
+{
+  "description": "Latest Apple smartphone with 512GB storage"
+}
+```
+
+**Response**
+
+`200 Ok`
+
+```json
+{
+  "data": {
+    "id": "cuid....",
+    "name": "iPhone 17",
+    "description": "Latest Apple smartphone with 512GB storage",
+    "slug": "iphone-17",
+    "price": 1200,
+    "stock": 20,
+    "categoryId": 1,
+    "createdAt": "Date",
+    "updatedAt": "Date"
+  }
+}
+```
 
 ---
 
 ### Delete Product
 
-DELETE /products/:id
+```
+DELETE /api/products/:id
+```
+
+**Response**
+
+`200 Ok`
+
+```json
+{
+  "message": "Delete product successfully!"
+}
+```
+
+---
+
+### Get Product By Id
+
+```
+GET /api/products/:id
+```
+
+**Response**
+
+`200 Ok`
+
+```json
+{
+  "data": {
+    "id": "cuid....",
+    "name": "iPhone 17",
+    "description": "Latest Apple smartphone",
+    "slug": "iphone-17",
+    "price": 1200,
+    "stock": 20,
+    "categoryId": "cuid....",
+    "createdAt": "Date",
+    "updatedAt": "Date"
+  }
+}
+```
 
 ---
 
 ### Get Products
 
-GET /products?page=1&limit=10
+> Direct from postgres without elasticsearch
 
----
+```
+GET /api/products
+```
 
-## Search Service
+**Query Params**
 
-### Search Product
+| Param      | Type     | Validation                                                         |
+| ---------- | -------- | ------------------------------------------------------------------ |
+| `page`     | `number` | Optional default 1, min 1                                          |
+| `limit`    | `number` | Optional default 10, min 1, max 50                                 |
+| `search`   | `string` | Optional                                                           |
+| `category` | `string` | Optional                                                           |
+| `sortBy`   | `string` | Optional default `createdAt`, option: `name`, `price`, `createdAt` |
+| `order`    | `string` | Optional default `desc`, option: `asc`, `desc`                     |
 
-GET /search?q=iphone
-
-Example
-
-GET /search?q=iphone&page=1&limit=10
-
-Response
+**Request Body**
 
 ```json
 {
-  "items": [
+  "name": "iPhone 17",
+  "description": "Latest Apple smartphone",
+  "slug": "iphone-17",
+  "price": 1200,
+  "stock": 20,
+  "categoryId": "cuid...."
+}
+```
+
+**Response**
+
+`200 Ok`
+
+```json
+{
+  "data": [
     {
-      "id": 1,
+      "id": "cuid....",
       "name": "iPhone 17",
-      "score": 2.34
+      "description": "Latest Apple smartphone",
+      "slug": "iphone-17",
+      "price": 1200,
+      "stock": 20,
+      "categoryId": "cuid....",
+      "createdAt": "Date",
+      "updatedAt": "Date"
+    }
+  ],
+  "meta": {
+    "page": 1,
+    "limit": 10,
+    "total": 1,
+    "totalPages": 1
+  }
+}
+```
+
+---
+
+### Create Category
+
+```
+POST /api/categories
+```
+
+**Request Body**
+
+```json
+{
+  "name": "Smartphone",
+  "slug": "smartphone"
+}
+```
+
+**Response**
+
+`201 Created`
+
+```json
+{
+  "data": {
+    "id": "cuid....",
+    "name": "Smartphone",
+    "slug": "smartphone",
+    "createdAt": "Date",
+    "updatedAt": "Date"
+  }
+}
+```
+
+---
+
+### Update Product
+
+```
+PATCH /api/categories/:id
+```
+
+**Request Body**
+
+```json
+{
+  "name": "Smartphone",
+  "slug": "smartphone"
+}
+```
+
+**Response**
+
+`200 Ok`
+
+```json
+{
+  "data": {
+    "id": "cuid....",
+    "name": "Smartphone",
+    "slug": "smartphone",
+    "createdAt": "Date",
+    "updatedAt": "Date"
+  }
+}
+```
+
+---
+
+### Delete Product
+
+```
+DELETE /api/categories/:id
+```
+
+**Response**
+
+`200 Ok`
+
+```json
+{
+  "message": "Delete product successfully!"
+}
+```
+
+---
+
+### Get Category By Id
+
+```
+GET /api/categories/:id
+```
+
+**Response**
+
+`200 Ok`
+
+```json
+{
+  "data": {
+    "id": "cuid....",
+    "name": "Smartphone",
+    "slug": "smartphone",
+    "createdAt": "Date",
+    "updatedAt": "Date"
+  }
+}
+```
+
+---
+
+### Get Categories
+
+```
+GET /api/categories
+```
+
+**Response**
+
+`200 Ok`
+
+```json
+{
+  "data": [
+    {
+      "id": "cuid....",
+      "name": "Smartphone",
+      "slug": "smartphone",
+      "createdAt": "Date",
+      "updatedAt": "Date"
     }
   ]
 }
@@ -73,24 +333,89 @@ Response
 
 ---
 
-### Filter
+## Search Service
 
-GET /search?category=phone
+### Search Product
 
----
+> From elasticsearch
 
-### Sort
+```
+GET /api/products/search
+```
 
-GET /search?sort=price:asc
+**Query Params**
 
----
+| Param      | Type      | Validation                                       |
+| ---------- | --------- | ------------------------------------------------ |
+| `q`        | `string`  | Optional                                         |
+| `category` | `string`  | Optional                                         |
+| `minPrice` | `number`  | Optional                                         |
+| `maxPrice` | `number`  | Optional                                         |
+| `inStock`  | `boolean` | Optional                                         |
+| `sort`     | `string`  | Optional, option: `relevance`, `price`, `newest` |
+| `order`    | `string`  | Optional, option: `asc`, `desc`                  |
+| `page`     | `number`  | Optional default 1, min 1                        |
+| `limit`    | `number`  | Optional default 20, min 1, max 50               |
 
-### Price Range
+**Example**
 
-GET /search?minPrice=100&maxPrice=1000
+```
+GET /api/products/search?page=1&limit=5&inStock=true&q=iphne
+```
 
----
+**Response**
 
-### Combined
-
-GET /search?q=iphone&category=phone&sort=price:desc&page=1
+```json
+{
+  "data": [
+    {
+      "id": "cuid....",
+      "name": "iPhone 17",
+      "slug": "iphone-17",
+      "description": "Latest Apple smartphone",
+      "price": 1200,
+      "stock": 20,
+      "category": {
+        "id": "cuid....",
+        "name": "Smartphone",
+        "slug": "smartphone"
+      },
+      "highlight": {
+        "name": ["<em>iPhone</em> 17"]
+      }
+    }
+  ],
+  "meta": {
+    "page": 1,
+    "limit": 5,
+    "total": 1,
+    "totalPages": 1
+  },
+  "facet": {
+    "categories": [
+      {
+        "slug": "smartphone",
+        "count": 2
+      }
+    ],
+    "priceRanges": [
+      {
+        "key": "under_1m",
+        "count": 0
+      },
+      {
+        "key": "1m_5m",
+        "count": 0
+      },
+      {
+        "key": "5m_10m",
+        "count": 0
+      },
+      {
+        "key": "over_10m",
+        "count": 2
+      }
+    ]
+  }
+}
+```
