@@ -1,6 +1,6 @@
 # Product Search with CDC & Elasticsearch
 
-A simple event-driven product search system built with **NestJS**, **Next.js**, **PostgreSQL**, **Debezium**, **Apache Kafka**, and **Elasticsearch**.
+A simple event-driven product search system built with **NestJS**, **PostgreSQL**, **Debezium**, **Apache Kafka**, and **Elasticsearch**.
 
 The project demonstrates how Change Data Capture (CDC) can synchronize relational database changes into Elasticsearch without coupling the Product Service to the Search Service.
 
