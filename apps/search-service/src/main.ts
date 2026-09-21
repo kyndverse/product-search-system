@@ -4,9 +4,16 @@ import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { ValidationPipe } from '@nestjs/common';
 import { validationConfig } from './common/config/validation.config';
 import { HttpExceptionFilter } from './common/filters/http-exeption.filter';
+import cors from 'cors';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  app.use(
+    cors({
+      origin: 'http://localhost:5173',
+    }),
+  );
 
   app.useGlobalPipes(new ValidationPipe(validationConfig));
   app.useGlobalFilters(new HttpExceptionFilter());
